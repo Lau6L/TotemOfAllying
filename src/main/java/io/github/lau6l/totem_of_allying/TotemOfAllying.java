@@ -2,6 +2,7 @@ package io.github.lau6l.totem_of_allying;
 
 import io.github.lau6l.totem_of_allying.component.ToAComponents;
 import io.github.lau6l.totem_of_allying.item.ToAItems;
+import io.github.lau6l.totem_of_allying.world.TickExecutor;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ public class TotemOfAllying implements ModInitializer {
 
         ToAComponents.registerComponents();
         ToAItems.registerItems();
+        TickExecutor.initialize();
     }
 
     public static Identifier of(String value) {

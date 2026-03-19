@@ -1,9 +1,11 @@
 package io.github.lau6l.totem_of_allying.item;
 
+import io.github.lau6l.totem_of_allying.TotemOfAllying;
 import io.github.lau6l.totem_of_allying.component.AlliedEntityComponent;
 import io.github.lau6l.totem_of_allying.component.ToAComponents;
 import io.github.lau6l.totem_of_allying.mixin.AccessorAllayEntity;
 import io.github.lau6l.totem_of_allying.world.AlliedEntityState;
+import io.github.lau6l.totem_of_allying.world.TickExecutor;
 import io.github.lau6l.totem_of_allying.world.ToAPersistentState;
 import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
 import net.minecraft.component.DataComponentTypes;
@@ -16,13 +18,20 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ChunkTicketType;
+import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 
 import java.util.UUID;
@@ -113,5 +122,83 @@ public class TotemOfAllyingItem extends Item {
         ));
         return Text.translatable("totem_of_allying.interaction.updated")
                 .setStyle(SUCCESS);
+    }
+
+    @Override
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
+        ActionResult superResult = super.use(world, user, hand);
+        if (world.isClient() || superResult.isAccepted()) return superResult;
+
+        ItemStack stack = user.getStackInHand(hand);
+        AlliedEntityComponent alliedEntityComponent = stack.get(ToAComponents.ALLIED_ENTITY_COMPONENT);
+        if (alliedEntityComponent == null) return ActionResult.PASS;
+
+        ServerPlayerEntity serverUser = (ServerPlayerEntity) user;
+        MinecraftServer server = world.getServer();
+        ToAPersistentState persistenceManager = ToAPersistentState.getServerState(server);
+        AlliedEntityState state = persistenceManager.getAlliedEntity(alliedEntityComponent.uuid());
+
+        if (state == null) {
+            onAlliedEntityDeath(stack, serverUser);
+            return ActionResult.SUCCESS;
+        }
+
+        Entity entity = world.getEntity(alliedEntityComponent.uuid());
+        if (entity == null) {
+            loadAndTeleport(server, state, stack, serverUser, alliedEntityComponent, world);
+        } else {
+            teleportAlliedEntityToPlayer(entity, world, user);
+        }
+
+        return ActionResult.SUCCESS;
+    }
+
+    private static void teleportAlliedEntityToPlayer(Entity entity, World world, PlayerEntity player) {
+        entity.teleportTo(new TeleportTarget(
+                (ServerWorld) world,
+                player.getEntityPos(),
+                Vec3d.ZERO,
+                0, 0,
+                TeleportTarget.NO_OP
+        ));
+    }
+
+    private static void loadAndTeleport(MinecraftServer server, AlliedEntityState state, ItemStack stack, ServerPlayerEntity serverUser, AlliedEntityComponent alliedEntityComponent, World world) {
+        ServerWorld allyWorld = server.getWorld(state.world());
+        if (allyWorld == null) {
+            TotemOfAllying.LOGGER.error("Allied entity was in an unknown world! ({})", state.world().toString());
+            onAlliedEntityDeath(stack, serverUser);
+            return;
+        }
+        ServerChunkManager chunkManager = allyWorld.getChunkManager();
+        ChunkPos pos = new ChunkPos(
+                ChunkSectionPos.getSectionCoord(state.position().x()),
+                ChunkSectionPos.getSectionCoord(state.position().z())
+        );
+        chunkManager.addTicket(
+                ChunkTicketType.FORCED,
+                pos,
+                1
+        );
+
+        TickExecutor.schedule(() -> {
+            if (!chunkManager.isChunkLoaded(pos.x, pos.z)) return false;
+
+            Entity loadedEntity = world.getEntity(alliedEntityComponent.uuid());
+            if (loadedEntity == null)
+                onAlliedEntityDeath(stack, serverUser);
+            else teleportAlliedEntityToPlayer(loadedEntity, world, serverUser);
+
+            return true;
+        });
+    }
+
+    private static void onAlliedEntityDeath(ItemStack stack, ServerPlayerEntity serverUser) {
+        stack.remove(ToAComponents.ALLIED_ENTITY_COMPONENT);
+        stack.remove(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE);
+        serverUser.networkHandler.sendPacket(new OverlayMessageS2CPacket(
+                Text.translatable("totem_of_allying.use.died")
+                        .setStyle(FAILURE)
+        ));
     }
 }
