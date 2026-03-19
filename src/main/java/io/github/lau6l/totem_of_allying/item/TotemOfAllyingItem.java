@@ -1,0 +1,117 @@
+package io.github.lau6l.totem_of_allying.item;
+
+import io.github.lau6l.totem_of_allying.component.AlliedEntityComponent;
+import io.github.lau6l.totem_of_allying.component.ToAComponents;
+import io.github.lau6l.totem_of_allying.mixin.AccessorAllayEntity;
+import io.github.lau6l.totem_of_allying.world.AlliedEntityState;
+import io.github.lau6l.totem_of_allying.world.ToAPersistentState;
+import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Tameable;
+import net.minecraft.entity.passive.AllayEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.world.World;
+
+import java.util.UUID;
+
+public class TotemOfAllyingItem extends Item {
+    public TotemOfAllyingItem(Item.Settings settings) {
+        super(settings);
+    }
+
+    private static final Style SUCCESS = Style.EMPTY.withColor(Formatting.AQUA),
+            FAILURE = Style.EMPTY.withColor(Formatting.RED);
+
+    @Override
+    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+        World world = user.getEntityWorld();
+        stack = user.getStackInHand(hand);
+        if (world.isClient() ||
+                entity.getType() != EntityType.ALLAY && !(entity instanceof Tameable)
+                || !entity.isAlive()) {
+            return super.useOnEntity(stack, user, entity, hand);
+        }
+
+        AlliedEntityComponent previousAlly = stack.get(ToAComponents.ALLIED_ENTITY_COMPONENT);
+        ServerPlayerEntity serverUser = (ServerPlayerEntity) user;
+        Text notificationMessage;
+
+        if (previousAlly != null) {
+            notificationMessage = managePreviousAlly(previousAlly, stack, entity);
+        } else {
+            notificationMessage = manageNoPreviousAlly(stack, user, entity, (ServerWorld) world);
+        }
+        serverUser.networkHandler.sendPacket(new OverlayMessageS2CPacket(notificationMessage));
+
+        return ActionResult.SUCCESS;
+    }
+
+    private boolean isOwner(PlayerEntity owner, Entity entity) {
+        if (entity instanceof Tameable tameable) {
+            return owner.equals(tameable.getOwner());
+        } else if (entity instanceof AllayEntity allay) {
+            return ((AccessorAllayEntity) allay).totem_of_allying$isLikedBy(owner);
+        } else return false;
+    }
+
+    private Text manageNoPreviousAlly(ItemStack stack, PlayerEntity user, LivingEntity entity, ServerWorld world) {
+        if (!isOwner(user, entity)) {
+            return Text.translatable("totem_of_allying.interaction.not_owner")
+                    .setStyle(FAILURE);
+        }
+
+        ToAPersistentState persistenceManager = ToAPersistentState.getServerState(world.getServer());
+        UUID uuid = entity.getUuid();
+        persistenceManager.addAlliedEntity(uuid, new AlliedEntityState(
+                entity.getBlockPos().asVector3i(),
+                entity.getEntityWorld().getRegistryKey(),
+                1
+        ));
+        stack.set(ToAComponents.ALLIED_ENTITY_COMPONENT, new AlliedEntityComponent(
+                uuid,
+                entity.hasCustomName() ?
+                        entity.getCustomName() :
+                        entity.getType().getName()
+        ));
+        stack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
+        ComponentTooltipAppenderRegistry.addFirst(ToAComponents.ALLIED_ENTITY_COMPONENT);
+
+        return Text.translatable("totem_of_allying.interaction.bound")
+                .setStyle(SUCCESS);
+    }
+
+    private Text managePreviousAlly(AlliedEntityComponent previousAlly, ItemStack stack, LivingEntity entity) {
+        if (!previousAlly.uuid().equals(entity.getUuid())) {
+            return Text.translatable("totem_of_allying.interaction.bound_to_another_entity")
+                    .setStyle(FAILURE);
+        }
+
+        Text entityName = entity.hasCustomName() ?
+                entity.getCustomName() :
+                entity.getType().getName();
+        if (previousAlly.typeOrName().equals(entityName)) {
+            return Text.translatable("totem_of_allying.interaction.already_bound")
+                    .setStyle(FAILURE);
+        }
+
+        stack.set(ToAComponents.ALLIED_ENTITY_COMPONENT, new AlliedEntityComponent(
+                previousAlly.uuid(),
+                entityName
+        ));
+        return Text.translatable("totem_of_allying.interaction.updated")
+                .setStyle(SUCCESS);
+    }
+}

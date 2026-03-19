@@ -4,6 +4,7 @@
   "package": "io.github.lau6l.totem_of_allying.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AccessorAllayEntity"
   ],
   "injectors": {
     "defaultRequire": 1
