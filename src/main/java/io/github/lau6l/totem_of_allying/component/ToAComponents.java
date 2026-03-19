@@ -6,7 +6,7 @@ import net.minecraft.registry.Registry;
 
 import java.util.function.UnaryOperator;
 
-public class Components {
+public class ToAComponents {
     public static final ComponentType<AlliedEntityComponent> ALLIED_ENTITY_COMPONENT = register(
             "allied_entity", builder -> builder.codec(AlliedEntityComponent.CODEC).packetCodec(AlliedEntityComponent.PACKET_CODEC).cache()
     );
