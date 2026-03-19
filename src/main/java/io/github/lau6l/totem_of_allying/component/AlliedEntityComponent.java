@@ -8,29 +8,35 @@ import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Uuids;
 
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public record AlliedEntityComponent(UUID uuid, String typeOrName) implements TooltipAppender {
+public record AlliedEntityComponent(UUID uuid, Text typeOrName) implements TooltipAppender {
     public static final Codec<AlliedEntityComponent> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                     Uuids.CODEC.fieldOf("uuid").forGetter(AlliedEntityComponent::uuid),
-                    Codec.STRING.fieldOf("name").forGetter(AlliedEntityComponent::typeOrName)
+                    TextCodecs.CODEC.fieldOf("name").forGetter(AlliedEntityComponent::typeOrName)
             ).apply(instance, AlliedEntityComponent::new)
     );
     public static final PacketCodec<RegistryByteBuf, AlliedEntityComponent> PACKET_CODEC = PacketCodec.tuple(
             Uuids.PACKET_CODEC,
             AlliedEntityComponent::uuid,
-            PacketCodecs.STRING,
+            TextCodecs.PACKET_CODEC,
             AlliedEntityComponent::typeOrName,
             AlliedEntityComponent::new
     );
     @Override
     public void appendTooltip(Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type, ComponentsAccess components) {
-        textConsumer.accept(Text.of("§3Bound Entity: ").copy().append(Text.translatable(typeOrName)));
+        textConsumer.accept(
+                Text.translatable("totem_of_allying.component.bound_entity")
+                        .setStyle(Style.EMPTY.withColor(Colors.CYAN))
+                        .append(typeOrName)
+        );
     }
 }
