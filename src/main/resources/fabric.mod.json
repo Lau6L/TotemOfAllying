@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "totem_of_allying",
+  "version": "${version}",
+
+  "name": "Totem of Allying",
+  "description": "TPs bound animals and allays to players.",
+  "authors": [
+    {
+      "name": "Lau6L",
+      "contact": {
+        "homepage": "https://github.com/Lau6L"
+      }
+    }
+  ],
+  "contact": {
+    "sources": "https://github.com/Lau6L/TotemOfAllying"
+  },
+
+  "license": "MIT",
+  "icon": "assets/totem_of_allying/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "client": ["io.github.lau6l.totem_of_allying.client.TotemOfAllyingClient"],
+    "main": ["io.github.lau6l.totem_of_allying.TotemOfAllying"]
+  },
+
+  "mixins": [
+    "totem_of_allying.mixins.json"
+    ,{
+      "config": "totem_of_allying.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
