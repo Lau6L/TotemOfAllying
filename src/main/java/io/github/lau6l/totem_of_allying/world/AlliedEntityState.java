@@ -15,4 +15,8 @@ public record AlliedEntityState(Vector3ic position, RegistryKey<World> world, in
                     Codec.INT.fieldOf("references").forGetter(AlliedEntityState::references)
             ).apply(instance, AlliedEntityState::new)
     );
+
+    public AlliedEntityState(Vector3ic position, RegistryKey<World> world) {
+        this(position, world, 1);
+    }
 }

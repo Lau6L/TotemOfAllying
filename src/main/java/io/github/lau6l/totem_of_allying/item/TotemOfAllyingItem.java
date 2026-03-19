@@ -86,8 +86,7 @@ public class TotemOfAllyingItem extends Item {
         UUID uuid = entity.getUuid();
         persistenceManager.addAlliedEntity(uuid, new AlliedEntityState(
                 entity.getBlockPos().asVector3i(),
-                entity.getEntityWorld().getRegistryKey(),
-                1
+                entity.getEntityWorld().getRegistryKey()
         ));
         stack.set(ToAComponents.ALLIED_ENTITY_COMPONENT, new AlliedEntityComponent(
                 uuid,
