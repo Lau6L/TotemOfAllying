@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.lau6l.totem_of_allying.TotemOfAllying;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Uuids;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateType;
@@ -26,13 +27,33 @@ public class ToAPersistentState extends PersistentState {
     public AlliedEntityState getAlliedEntity(UUID uuid) {
         return alliedEntities.get(uuid);
     }
-    public void putAlliedEntity(UUID uuid, AlliedEntityState state) {
+    public void addAlliedEntity(UUID uuid, AlliedEntityState state) {
+        AlliedEntityState previousState = alliedEntities.get(uuid);
+        if (previousState != null) {
+            state = new AlliedEntityState(
+                    state.position(),
+                    state.world(),
+                    previousState.references() + state.references()
+            );
+        }
         alliedEntities.put(uuid, state);
         markDirty();
     }
     public AlliedEntityState removeAlliedEntity(UUID uuid) {
+        AlliedEntityState state = alliedEntities.get(uuid);
+        if (state == null) return null;
+
         markDirty();
-        return alliedEntities.remove(uuid);
+        if (state.references() <= 1) {
+            return alliedEntities.remove(uuid);
+        } else {
+            state = new AlliedEntityState(
+                    state.position(),
+                    state.world(),
+                    state.references() - 1
+            );
+            return alliedEntities.put(uuid, state);
+        }
     }
     public boolean isBoundToTotemOfAllying(UUID uuid) {
         return alliedEntities.containsKey(uuid);

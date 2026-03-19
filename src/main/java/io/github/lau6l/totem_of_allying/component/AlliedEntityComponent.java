@@ -11,7 +11,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
-import net.minecraft.util.Colors;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Uuids;
 
 import java.util.UUID;
@@ -35,7 +35,8 @@ public record AlliedEntityComponent(UUID uuid, Text typeOrName) implements Toolt
     public void appendTooltip(Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type, ComponentsAccess components) {
         textConsumer.accept(
                 Text.translatable("totem_of_allying.component.bound_entity")
-                        .setStyle(Style.EMPTY.withColor(Colors.CYAN))
+                        .setStyle(Style.EMPTY.withColor(Formatting.DARK_AQUA))
+                        .append(": ")
                         .append(typeOrName)
         );
     }
