@@ -49,7 +49,7 @@ public class TotemOfAllyingItem extends Item {
         World world = user.getEntityWorld();
         stack = user.getStackInHand(hand);
         if (world.isClient() ||
-                entity.getType() != EntityType.ALLAY && !(entity instanceof Tameable)
+                !doesTotemOfAllyingApply(entity)
                 || !entity.isAlive()) {
             return super.useOnEntity(stack, user, entity, hand);
         }
@@ -66,6 +66,10 @@ public class TotemOfAllyingItem extends Item {
         serverUser.networkHandler.sendPacket(new OverlayMessageS2CPacket(notificationMessage));
 
         return ActionResult.SUCCESS;
+    }
+
+    private boolean doesTotemOfAllyingApply(Entity entity) {
+        return entity.getType() == EntityType.ALLAY || entity instanceof Tameable;
     }
 
     private boolean isOwner(PlayerEntity owner, Entity entity) {
