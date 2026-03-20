@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "totem_of_allying:item/totem_of_allying"
+  }
+}
