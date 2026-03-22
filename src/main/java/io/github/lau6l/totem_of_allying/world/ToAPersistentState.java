@@ -14,13 +14,14 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ToAPersistentState extends PersistentState {
-    private Map<UUID, AlliedEntityState> alliedEntities = new HashMap<>();
+    private final Map<UUID, AlliedEntityState> alliedEntities;
 
     private ToAPersistentState() {
+        this.alliedEntities = new HashMap<>();
     }
 
     private ToAPersistentState(Map<UUID, AlliedEntityState> totemOfAllyingSavedEntities) {
-        this.alliedEntities = totemOfAllyingSavedEntities;
+        this.alliedEntities = new HashMap<>(totemOfAllyingSavedEntities);
     }
 
     public AlliedEntityState getAlliedEntity(UUID uuid) {
