@@ -3,6 +3,7 @@ package io.github.lau6l.totem_of_allying.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.serialization.Codec;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -60,8 +61,10 @@ public class OwnerCommand {
         entities.forEach(entity -> {
             if (entity instanceof TameableEntity tameable) {
                 tameable.setOwner((LazyEntityReference<LivingEntity>) null);
+                tameable.setTamed(false, true);
             } else if (entity instanceof AbstractHorseEntity horse) {
                 horse.setOwner(null);
+                horse.setTame(false);
             } else if (entity instanceof AllayEntity allay) {
                 allay.getBrain()
                         .forget(MemoryModuleType.LIKED_PLAYER);
@@ -90,9 +93,12 @@ public class OwnerCommand {
 
         entities.forEach(entity -> {
             if (entity instanceof TameableEntity tameable) {
+                tameable.setTamed(true, true);
                 tameable.setOwner(livingOwner);
             } else if (entity instanceof AbstractHorseEntity horse) {
                 horse.setOwner(livingOwner);
+                horse.setTame(true);
+                horse.getEntityWorld().sendEntityStatus(horse, (byte) 7);
             } else if (entity instanceof AllayEntity allay) {
                 allay.getBrain()
                         .remember(MemoryModuleType.LIKED_PLAYER, livingOwner.getUuid());
@@ -101,6 +107,7 @@ public class OwnerCommand {
                 entity.writeData(view);
 
                 view.put("Owner", Uuids.INT_STREAM_CODEC, livingOwner.getUuid());
+                view.put("Tame", Codec.BOOL, false);
 
                 entity.readData(NbtReadView.create(
                         ErrorReporter.EMPTY,
