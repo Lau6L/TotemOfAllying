@@ -7,6 +7,7 @@ import io.github.lau6l.totem_of_allying.mixin.AccessorAllayEntity;
 import io.github.lau6l.totem_of_allying.world.AlliedEntityState;
 import io.github.lau6l.totem_of_allying.world.TickExecutor;
 import io.github.lau6l.totem_of_allying.world.ToAPersistentState;
+import io.github.lau6l.totem_of_allying.world.TpRequest;
 import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
@@ -30,8 +31,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 
 import java.util.UUID;
@@ -41,7 +40,7 @@ public class TotemOfAllyingItem extends Item {
         super(settings);
     }
 
-    private static final Style SUCCESS = Style.EMPTY.withColor(Formatting.AQUA),
+    public static final Style SUCCESS = Style.EMPTY.withColor(Formatting.AQUA),
             FAILURE = Style.EMPTY.withColor(Formatting.RED);
 
     @Override
@@ -142,7 +141,7 @@ public class TotemOfAllyingItem extends Item {
         AlliedEntityState state = persistenceManager.getAlliedEntity(alliedEntityComponent.uuid());
 
         if (state == null) {
-            onAlliedEntityDeath(stack, serverUser);
+            TpRequest.onAlliedEntityDeath(stack, serverUser);
             return ActionResult.SUCCESS;
         }
 
@@ -150,27 +149,17 @@ public class TotemOfAllyingItem extends Item {
         if (entity == null) {
             loadAndTeleport(server, state, stack, serverUser, alliedEntityComponent, world);
         } else {
-            teleportAlliedEntityToPlayer(entity, world, user);
+            TpRequest.teleportAlliedEntityToPlayer(entity, world, user);
         }
 
         return ActionResult.SUCCESS;
-    }
-
-    private static void teleportAlliedEntityToPlayer(Entity entity, World world, PlayerEntity player) {
-        entity.teleportTo(new TeleportTarget(
-                (ServerWorld) world,
-                player.getEntityPos(),
-                Vec3d.ZERO,
-                0, 0,
-                TeleportTarget.NO_OP
-        ));
     }
 
     private static void loadAndTeleport(MinecraftServer server, AlliedEntityState state, ItemStack stack, ServerPlayerEntity serverUser, AlliedEntityComponent alliedEntityComponent, World world) {
         ServerWorld allyWorld = server.getWorld(state.world());
         if (allyWorld == null) {
             TotemOfAllying.LOGGER.error("Allied entity was in an unknown world! ({})", state.world().toString());
-            onAlliedEntityDeath(stack, serverUser);
+            TpRequest.onAlliedEntityDeath(stack, serverUser);
             return;
         }
         ServerChunkManager chunkManager = allyWorld.getChunkManager();
@@ -184,24 +173,7 @@ public class TotemOfAllyingItem extends Item {
                 1
         );
 
-        TickExecutor.schedule(() -> {
-            if (!chunkManager.isChunkLoaded(pos.x, pos.z)) return false;
-
-            Entity loadedEntity = world.getEntity(alliedEntityComponent.uuid());
-            if (loadedEntity == null)
-                onAlliedEntityDeath(stack, serverUser);
-            else teleportAlliedEntityToPlayer(loadedEntity, world, serverUser);
-
-            return true;
-        });
-    }
-
-    private static void onAlliedEntityDeath(ItemStack stack, ServerPlayerEntity serverUser) {
-        stack.remove(ToAComponents.ALLIED_ENTITY_COMPONENT);
-        stack.remove(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE);
-        serverUser.networkHandler.sendPacket(new OverlayMessageS2CPacket(
-                Text.translatable("totem_of_allying.use.died")
-                        .setStyle(FAILURE)
-        ));
+        TickExecutor.schedule(
+                new TpRequest((ServerWorld) world, allyWorld, serverUser, stack, chunkManager, pos, alliedEntityComponent));
     }
 }

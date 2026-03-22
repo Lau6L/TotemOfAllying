@@ -4,21 +4,20 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class TickExecutor {
-    private static final List<Supplier<Boolean>> tasks = new ArrayList<>();
+    private static final List<TpRequest> tasks = new ArrayList<>();
 
     public static void initialize() {
-        ServerTickEvents.END_SERVER_TICK.register(s -> tick());
+        ServerTickEvents.START_SERVER_TICK.register(s -> tick());
     }
 
     private static void tick() {
         if (tasks.isEmpty()) return;
-        tasks.removeIf(Supplier::get);
+        tasks.removeIf(TpRequest::tick);
     }
 
-    public static void schedule(Supplier<Boolean> task) {
-        tasks.add(task);
+    public static void schedule(TpRequest request) {
+        tasks.add(request);
     }
 }
