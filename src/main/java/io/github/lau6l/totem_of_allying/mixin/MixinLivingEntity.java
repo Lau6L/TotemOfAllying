@@ -52,13 +52,13 @@ public abstract class MixinLivingEntity {
         UUID uuid = self.getUuid();
         if (!persistenceManager.isBoundToTotemOfAllying(uuid)) return;
 
-        if (reason.shouldSave() || reason == Entity.RemovalReason.CHANGED_DIMENSION) {
+        if (reason.shouldSave()) {
             persistenceManager.addAlliedEntity(uuid, new AlliedEntityState(
                     self.getBlockPos().asVector3i(),
-                    self.getEntityWorld().getRegistryKey(),
+                    world.getRegistryKey(),
                     0
             ));
-        } else {
+        } else if (reason != Entity.RemovalReason.CHANGED_DIMENSION) {
             persistenceManager.removeAlliedEntityEntry(uuid);
         }
     }
