@@ -26,7 +26,7 @@ public class TpRequest {
     private final ChunkPos allyPos;
     private final AlliedEntityComponent alliedEntityComponent;
     private short chunkLoadedCount;
-    private static final short REQUIRED_CHUNK_LOADED_COUNT = 5;
+    private static final short REQUIRED_CHUNK_LOADED_COUNT = 10;
 
     public TpRequest(ServerWorld ownerWorld, ServerWorld allyWorld, ServerPlayerEntity serverUser, ItemStack totemStack, ServerChunkManager chunkManager, ChunkPos allyPos, AlliedEntityComponent alliedEntityComponent) {
         this.ownerWorld = ownerWorld;
@@ -41,11 +41,12 @@ public class TpRequest {
 
     public boolean tick() {
         if (!chunkManager.isChunkLoaded(allyPos.x, allyPos.z)) return false;
-        else if (chunkLoadedCount++ < REQUIRED_CHUNK_LOADED_COUNT) {
+
+        Entity loadedEntity = allyWorld.getEntity(alliedEntityComponent.uuid());
+        if (loadedEntity == null && chunkLoadedCount++ < REQUIRED_CHUNK_LOADED_COUNT) {
             return false;
         }
 
-        Entity loadedEntity = allyWorld.getEntity(alliedEntityComponent.uuid());
         if (loadedEntity == null)
             onAlliedEntityDeath(totemStack, serverUser);
         else teleportAlliedEntityToPlayer(loadedEntity, ownerWorld, serverUser);

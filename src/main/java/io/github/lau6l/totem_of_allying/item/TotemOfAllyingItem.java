@@ -167,7 +167,7 @@ public class TotemOfAllyingItem extends Item {
                 ChunkSectionPos.getSectionCoord(state.position().x()),
                 ChunkSectionPos.getSectionCoord(state.position().z())
         );
-        chunkManager.addTicket(
+        chunkManager.addChunkLoadingTicket(
                 ChunkTicketType.FORCED,
                 pos,
                 1
