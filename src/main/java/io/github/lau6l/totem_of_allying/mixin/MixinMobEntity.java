@@ -23,7 +23,7 @@ public class MixinMobEntity {
         ItemStack itemStack = player.getStackInHand(hand);
         if (itemStack.isOf(ToAItems.TOTEM_OF_ALLYING)) {
             itemStack.useOnEntity(player, (LivingEntity)(Object) this, hand);
-            cir.setReturnValue(ActionResult.PASS);
+            cir.setReturnValue(ActionResult.SUCCESS);
         }
     }
 }
