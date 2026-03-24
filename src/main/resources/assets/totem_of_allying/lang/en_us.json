@@ -1,13 +1,13 @@
 {
-  "totem_of_allying.component.bound_entity": "Bound entity",
+  "totem_of_allying.component.bonded_entity": "Bonded entity",
 
-  "totem_of_allying.interaction.bound_to_another_entity": "This Totem of Allying is bound to another entity",
-  "totem_of_allying.interaction.already_bound": "This Totem of Allying is already bound to this entity",
+  "totem_of_allying.interaction.bonded_to_another_entity": "This Totem of Allying is bonded to another entity",
+  "totem_of_allying.interaction.already_bonded": "This Totem of Allying is already bonded to this entity",
   "totem_of_allying.interaction.updated": "This Totem of Allying was updated",
-  "totem_of_allying.interaction.not_owner": "This entity is not yours, so it cannot be bound",
-  "totem_of_allying.interaction.bound": "Entity now bound to this Totem of Allying",
+  "totem_of_allying.interaction.not_owner": "This entity is not yours, so it cannot be bonded",
+  "totem_of_allying.interaction.bonded": "Entity now bonded to this Totem of Allying",
 
-  "totem_of_allying.use.died": "The entity bound to this Totem of Allying has died...",
+  "totem_of_allying.use.died": "The entity bonded to this Totem of Allying has died...",
 
   "totem_of_allying.commands.not_tameable": "Not all target entities were tameable",
   "totem_of_allying.commands.not_alive": "Owner is not alive",
