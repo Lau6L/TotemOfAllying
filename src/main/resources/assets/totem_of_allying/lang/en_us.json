@@ -10,5 +10,7 @@
   "totem_of_allying.use.died": "The entity bound to this Totem of Allying has died...",
 
   "totem_of_allying.commands.not_tameable": "Not all target entities were tameable",
-  "totem_of_allying.commands.not_alive": "Owner is not alive"
+  "totem_of_allying.commands.not_alive": "Owner is not alive",
+
+  "item.totem_of_allying.totem_of_allying": "Totem of Allying"
 }
