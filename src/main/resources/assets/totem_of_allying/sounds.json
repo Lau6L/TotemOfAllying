@@ -1,0 +1,26 @@
+{
+  "totem_bond": {
+    "subtitle": "totem_of_allying.sound.bond",
+    "sounds": [
+      "totem_of_allying:totem_bond"
+    ]
+  },
+  "totem_release": {
+    "subtitle": "totem_of_allying.sound.release",
+    "sounds": [
+      "totem_of_allying:totem_release"
+    ]
+  },
+  "totem_fail": {
+    "subtitle": "totem_of_allying.sound.fail",
+    "sounds": [
+      "totem_of_allying:totem_fail"
+    ]
+  },
+  "totem_tp": {
+    "subtitle": "totem_of_allying.sound.tp",
+    "sounds": [
+      "totem_of_allying:totem_tp"
+    ]
+  }
+}

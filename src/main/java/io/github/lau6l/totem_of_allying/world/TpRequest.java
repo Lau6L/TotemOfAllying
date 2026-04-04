@@ -3,6 +3,8 @@ package io.github.lau6l.totem_of_allying.world;
 import io.github.lau6l.totem_of_allying.component.AlliedEntityComponent;
 import io.github.lau6l.totem_of_allying.component.ToAComponents;
 import io.github.lau6l.totem_of_allying.item.TotemOfAllyingItem;
+import io.github.lau6l.totem_of_allying.particle.ToAParticles;
+import io.github.lau6l.totem_of_allying.sound.ToASounds;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,7 +14,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.TeleportTarget;
@@ -61,6 +65,12 @@ public class TpRequest {
     }
 
     public static void onAlliedEntityDeath(ItemStack stack, ServerPlayerEntity serverUser) {
+        serverUser.getEntityWorld().playSound(
+                null,
+                serverUser.getX(), serverUser.getY(), serverUser.getZ(),
+                ToASounds.TOTEM_OF_ALLYING_RELEASE,
+                SoundCategory.PLAYERS
+        );
         stack.remove(ToAComponents.ALLIED_ENTITY_COMPONENT);
         stack.remove(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE);
         serverUser.networkHandler.sendPacket(new OverlayMessageS2CPacket(
@@ -70,6 +80,9 @@ public class TpRequest {
     }
 
     public static void teleportAlliedEntityToPlayer(Entity entity, World world, PlayerEntity player) {
+        spawnTotemOfAllyingParticles(entity);
+        spawnTotemOfAllyingParticles(player);
+
         entity.teleportTo(new TeleportTarget(
                 (ServerWorld) world,
                 player.getEntityPos(),
@@ -77,5 +90,26 @@ public class TpRequest {
                 0, 0,
                 TeleportTarget.NO_OP
         ));
+    }
+
+    public static void spawnTotemOfAllyingParticles(Entity entity) {
+        if (entity.getEntityWorld() instanceof ServerWorld serverEntityWorld) {
+            Box boundingBox = entity.getBoundingBox();
+            serverEntityWorld.spawnParticles(
+                    ToAParticles.TOTEM_OF_ALLYING,
+                    false,
+                    false,
+                    entity.getX(), entity.getY(), entity.getZ(),
+                    (int) boundingBox.getAverageSideLength() * 15,
+                    boundingBox.maxX / 2, boundingBox.maxY / 2, boundingBox.maxZ / 2,
+                    0.5
+            );
+            serverEntityWorld.playSound(
+                    null,
+                    entity.getX(), entity.getY(), entity.getZ(),
+                    ToASounds.TOTEM_OF_ALLYING_TP,
+                    entity.isPlayer() ? SoundCategory.PLAYERS : SoundCategory.NEUTRAL
+            );
+        }
     }
 }

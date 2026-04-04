@@ -4,6 +4,7 @@ import io.github.lau6l.totem_of_allying.TotemOfAllying;
 import io.github.lau6l.totem_of_allying.component.AlliedEntityComponent;
 import io.github.lau6l.totem_of_allying.component.ToAComponents;
 import io.github.lau6l.totem_of_allying.mixin.AccessorAllayEntity;
+import io.github.lau6l.totem_of_allying.sound.ToASounds;
 import io.github.lau6l.totem_of_allying.world.AlliedEntityState;
 import io.github.lau6l.totem_of_allying.world.TickExecutor;
 import io.github.lau6l.totem_of_allying.world.ToAPersistentState;
@@ -24,6 +25,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -58,7 +60,7 @@ public class TotemOfAllyingItem extends Item {
         Text notificationMessage;
 
         if (previousAlly != null) {
-            notificationMessage = managePreviousAlly(previousAlly, stack, entity);
+            notificationMessage = managePreviousAlly(previousAlly, stack, user, entity, (ServerWorld) world);
         } else {
             notificationMessage = manageNoPreviousAlly(stack, user, entity, (ServerWorld) world);
         }
@@ -81,6 +83,12 @@ public class TotemOfAllyingItem extends Item {
 
     private Text manageNoPreviousAlly(ItemStack stack, PlayerEntity user, LivingEntity entity, ServerWorld world) {
         if (!isOwner(user, entity)) {
+            world.playSound(
+                    null,
+                    user.getX(), user.getY(), user.getZ(),
+                    ToASounds.TOTEM_OF_ALLYING_FAIL,
+                    SoundCategory.PLAYERS
+            );
             return Text.translatable("totem_of_allying.interaction.not_owner")
                     .setStyle(FAILURE);
         }
@@ -100,13 +108,25 @@ public class TotemOfAllyingItem extends Item {
         stack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
         ComponentTooltipAppenderRegistry.addFirst(ToAComponents.ALLIED_ENTITY_COMPONENT);
 
-        return Text.translatable("totem_of_allying.interaction.bound")
+        world.playSound(
+                null,
+                user.getX(), user.getY(), user.getZ(),
+                ToASounds.TOTEM_OF_ALLYING_BOND,
+                SoundCategory.PLAYERS
+        );
+        return Text.translatable("totem_of_allying.interaction.bonded")
                 .setStyle(SUCCESS);
     }
 
-    private Text managePreviousAlly(AlliedEntityComponent previousAlly, ItemStack stack, LivingEntity entity) {
+    private Text managePreviousAlly(AlliedEntityComponent previousAlly, ItemStack stack, PlayerEntity user, LivingEntity entity, ServerWorld world) {
         if (!previousAlly.uuid().equals(entity.getUuid())) {
-            return Text.translatable("totem_of_allying.interaction.bound_to_another_entity")
+            world.playSound(
+                    null,
+                    user.getX(), user.getY(), user.getZ(),
+                    ToASounds.TOTEM_OF_ALLYING_FAIL,
+                    SoundCategory.PLAYERS
+            );
+            return Text.translatable("totem_of_allying.interaction.bonded_to_another_entity")
                     .setStyle(FAILURE);
         }
 
@@ -114,7 +134,7 @@ public class TotemOfAllyingItem extends Item {
                 entity.getCustomName() :
                 entity.getType().getName();
         if (previousAlly.typeOrName().equals(entityName)) {
-            return Text.translatable("totem_of_allying.interaction.already_bound")
+            return Text.translatable("totem_of_allying.interaction.already_bonded")
                     .setStyle(FAILURE);
         }
 
@@ -122,6 +142,13 @@ public class TotemOfAllyingItem extends Item {
                 previousAlly.uuid(),
                 entityName
         ));
+
+        world.playSound(
+                null,
+                user.getX(), user.getY(), user.getZ(),
+                ToASounds.TOTEM_OF_ALLYING_BOND,
+                SoundCategory.PLAYERS
+        );
         return Text.translatable("totem_of_allying.interaction.updated")
                 .setStyle(SUCCESS);
     }

@@ -4,6 +4,7 @@ import io.github.lau6l.totem_of_allying.command.OwnerCommand;
 import io.github.lau6l.totem_of_allying.component.ToAComponents;
 import io.github.lau6l.totem_of_allying.item.ToAItems;
 import io.github.lau6l.totem_of_allying.particle.ToAParticles;
+import io.github.lau6l.totem_of_allying.sound.ToASounds;
 import io.github.lau6l.totem_of_allying.world.TickExecutor;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -21,6 +22,7 @@ public class TotemOfAllying implements ModInitializer {
 
         ToAComponents.registerComponents();
         ToAItems.registerItems();
+        ToASounds.registerSounds();
         ToAParticles.registerParticles();
         TickExecutor.initialize();
         registerCommands();
