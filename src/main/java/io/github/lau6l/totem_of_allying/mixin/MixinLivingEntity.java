@@ -40,7 +40,7 @@ public abstract class MixinLivingEntity {
         if (world.isClient()) return;
         ToAPersistentState state = ToAPersistentState.getServerState(world.getServer());
 
-        state.removeAlliedEntity(alliedEntityComponent.uuid());
+        state.removeAlliedEntityReference(alliedEntityComponent.uuid());
     }
 
     @Unique

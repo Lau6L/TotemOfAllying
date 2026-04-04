@@ -39,12 +39,15 @@ public class ToAPersistentState extends PersistentState {
         alliedEntities.put(uuid, state);
         markDirty();
     }
-    public AlliedEntityState removeAlliedEntity(UUID uuid) {
+    public AlliedEntityState removeAlliedEntityReference(UUID uuid) {
         AlliedEntityState state = alliedEntities.get(uuid);
         if (state == null) return null;
 
         markDirty();
         if (state.references() <= 1) {
+            if (state.references() <= 0) {
+                TotemOfAllying.LOGGER.error("Allied entity state contained invalid reference count! ({})", state.references());
+            }
             return alliedEntities.remove(uuid);
         } else {
             state = new AlliedEntityState(

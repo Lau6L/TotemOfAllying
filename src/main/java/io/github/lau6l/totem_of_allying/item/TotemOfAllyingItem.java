@@ -134,6 +134,12 @@ public class TotemOfAllyingItem extends Item {
                 entity.getCustomName() :
                 entity.getType().getName();
         if (previousAlly.typeOrName().equals(entityName)) {
+            world.playSound(
+                    null,
+                    user.getX(), user.getY(), user.getZ(),
+                    ToASounds.TOTEM_OF_ALLYING_FAIL,
+                    SoundCategory.PLAYERS
+            );
             return Text.translatable("totem_of_allying.interaction.already_bonded")
                     .setStyle(FAILURE);
         }
@@ -185,7 +191,9 @@ public class TotemOfAllyingItem extends Item {
     private static void loadAndTeleport(MinecraftServer server, AlliedEntityState state, ItemStack stack, ServerPlayerEntity serverUser, AlliedEntityComponent alliedEntityComponent, World world) {
         ServerWorld allyWorld = server.getWorld(state.world());
         if (allyWorld == null) {
-            TotemOfAllying.LOGGER.error("Allied entity was in an unknown world! ({})", state.world().toString());
+            TotemOfAllying.LOGGER.error("Allied entity was in an unknown world! ({}, [{}, {}, {}])",
+                    state.world().toString(),
+                    state.position().x(), state.position().y(), state.position().z());
             TpRequest.onAlliedEntityDeath(stack, serverUser);
             return;
         }

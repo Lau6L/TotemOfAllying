@@ -12,5 +12,10 @@
   "totem_of_allying.commands.not_tameable": "Not all target entities were tameable",
   "totem_of_allying.commands.not_alive": "Owner is not alive",
 
-  "item.totem_of_allying.totem_of_allying": "Totem of Allying"
+  "item.totem_of_allying.totem_of_allying": "Totem of Allying",
+
+  "totem_of_allying.sound.bond": "Totem of Allying bonding",
+  "totem_of_allying.sound.release": "Totem of Allying releasing",
+  "totem_of_allying.sound.fail": "Totem of Allying failing",
+  "totem_of_allying.sound.tp": "Totem of Allying teleporting"
 }

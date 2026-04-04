@@ -1,16 +1,21 @@
 {
-  "totem_of_allying.component.bound_entity": "Entidad ligada",
+  "totem_of_allying.component.bonded_entity": "Entidad ligada",
 
-  "totem_of_allying.interaction.bound_to_another_entity": "Este Tótem de la Alianza está ligado a otra entidad",
-  "totem_of_allying.interaction.already_bound": "Este Tótem de la Alianza ya está ligado a esta entidad",
+  "totem_of_allying.interaction.bonded_to_another_entity": "Este Tótem de la Alianza está ligado a otra entidad",
+  "totem_of_allying.interaction.already_bonded": "Este Tótem de la Alianza ya está ligado a esta entidad",
   "totem_of_allying.interaction.updated": "Este Tótem de la Alianza fue actualizado",
   "totem_of_allying.interaction.not_owner": "Esta entidad no es tuya, así que no podés ligarla",
-  "totem_of_allying.interaction.bound": "Este Tótem de la Alianza fue ligado a esta entidad",
+  "totem_of_allying.interaction.bonded": "Este Tótem de la Alianza fue ligado a esta entidad",
 
   "totem_of_allying.use.died": "La entidad ligada a este Tótem de la Alianza murió...",
 
   "totem_of_allying.commands.not_tameable": "No todas las entidades seleccionadas son domesticables",
   "totem_of_allying.commands.not_alive": "El dueño no está vivo",
 
-  "item.totem_of_allying.totem_of_allying": "Tótem de la Alianza"
+  "item.totem_of_allying.totem_of_allying": "Tótem de la Alianza",
+
+  "totem_of_allying.sound.bond": "Tótem de la Alianza ligándose",
+  "totem_of_allying.sound.release": "Tótem de la Alianza liberándose",
+  "totem_of_allying.sound.fail": "Tótem de la Alianza fallando",
+  "totem_of_allying.sound.tp": "Tótem de la Alianza teletransportando"
 }
