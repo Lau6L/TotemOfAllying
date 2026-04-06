@@ -32,7 +32,7 @@ public class ToAItems {
             new Item.Settings()
                     .rarity(Rarity.RARE)
                     .maxCount(1)
-                    .useCooldown(5)
+                    .useCooldown(3)
     );
 
     private static Item register(String name, Function<Item.Settings, Item> factory, Item.Settings settings) {

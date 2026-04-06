@@ -1,5 +1,6 @@
 package io.github.lau6l.totem_of_allying.component;
 
+import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
 import net.minecraft.component.ComponentType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -16,5 +17,6 @@ public class ToAComponents {
     }
 
     public static void registerComponents() {
+        ComponentTooltipAppenderRegistry.addFirst(ALLIED_ENTITY_COMPONENT);
     }
 }

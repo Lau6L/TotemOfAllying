@@ -9,7 +9,6 @@ import io.github.lau6l.totem_of_allying.world.AlliedEntityState;
 import io.github.lau6l.totem_of_allying.world.TickExecutor;
 import io.github.lau6l.totem_of_allying.world.ToAPersistentState;
 import io.github.lau6l.totem_of_allying.world.TpRequest;
-import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -108,7 +107,6 @@ public class TotemOfAllyingItem extends Item {
                         entity.getType().getName()
         ));
         stack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
-        ComponentTooltipAppenderRegistry.addFirst(ToAComponents.ALLIED_ENTITY_COMPONENT);
 
         world.playSound(
                 null,

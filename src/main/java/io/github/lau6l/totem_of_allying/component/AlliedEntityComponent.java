@@ -8,7 +8,6 @@ import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Formatting;
@@ -34,8 +33,8 @@ public record AlliedEntityComponent(UUID uuid, Text typeOrName) implements Toolt
     @Override
     public void appendTooltip(Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type, ComponentsAccess components) {
         textConsumer.accept(
-                Text.translatable("totem_of_allying.component.bound_entity")
-                        .setStyle(Style.EMPTY.withColor(Formatting.DARK_AQUA))
+                Text.translatable("totem_of_allying.component.bonded_entity")
+                        .formatted(Formatting.DARK_AQUA)
                         .append(": ")
                         .append(typeOrName)
         );
