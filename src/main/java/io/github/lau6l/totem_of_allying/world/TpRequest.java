@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
@@ -81,7 +82,6 @@ public class TpRequest {
 
     public static void teleportAlliedEntityToPlayer(Entity entity, World world, PlayerEntity player) {
         spawnTotemOfAllyingParticles(entity);
-        spawnTotemOfAllyingParticles(player);
 
         entity.teleportTo(new TeleportTarget(
                 (ServerWorld) world,
@@ -90,20 +90,42 @@ public class TpRequest {
                 0, 0,
                 TeleportTarget.NO_OP
         ));
+
+        spawnTotemOfAllyingParticles(entity);
     }
 
     public static void spawnTotemOfAllyingParticles(Entity entity) {
         if (entity.getEntityWorld() instanceof ServerWorld serverEntityWorld) {
             Box boundingBox = entity.getBoundingBox();
+
             serverEntityWorld.spawnParticles(
                     ToAParticles.TOTEM_OF_ALLYING,
                     false,
                     false,
                     entity.getX(), entity.getY(), entity.getZ(),
-                    (int) boundingBox.getAverageSideLength() * 15,
-                    boundingBox.maxX / 2, boundingBox.maxY / 2, boundingBox.maxZ / 2,
-                    0.5
+                    (int) boundingBox.getAverageSideLength() * 5,
+                    (boundingBox.maxX - boundingBox.minX) / 2, (boundingBox.maxY - boundingBox.minY) / 2, (boundingBox.maxZ - boundingBox.minZ) / 2,
+                    0
             );
+            serverEntityWorld.spawnParticles(
+                    ParticleTypes.END_ROD,
+                    false,
+                    false,
+                    entity.getX(), entity.getY(), entity.getZ(),
+                    (int) boundingBox.getAverageSideLength() * 25,
+                    (boundingBox.maxX - boundingBox.minX) / 2, (boundingBox.maxY - boundingBox.minY) / 2, (boundingBox.maxZ - boundingBox.minZ) / 2,
+                    0.1
+            );
+            serverEntityWorld.spawnParticles(
+                    ParticleTypes.REVERSE_PORTAL,
+                    false,
+                    false,
+                    entity.getX(), entity.getY(), entity.getZ(),
+                    (int) boundingBox.getAverageSideLength() * 50,
+                    (boundingBox.maxX - boundingBox.minX) / 2, (boundingBox.maxY - boundingBox.minY) / 2, (boundingBox.maxZ - boundingBox.minZ) / 2,
+                    1
+            );
+
             serverEntityWorld.playSound(
                     null,
                     entity.getX(), entity.getY(), entity.getZ(),

@@ -11,7 +11,7 @@ public class ToASounds {
             TOTEM_OF_ALLYING_BOND = register("totem_bond"),
             TOTEM_OF_ALLYING_RELEASE = register("totem_release"),
             TOTEM_OF_ALLYING_FAIL = register("totem_fail"),
-            TOTEM_OF_ALLYING_TP = register("totem_active");
+            TOTEM_OF_ALLYING_TP = register("totem_tp");
 
     private static SoundEvent register(String name) {
         Identifier id = TotemOfAllying.of(name);

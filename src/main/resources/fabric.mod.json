@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Totem of Allying",
-  "description": "TPs bound animals and allays to players.",
+  "description": "TPs bonded animals and allays to players via a Totem of Allying.",
   "authors": [
     {
       "name": "Lau6L",

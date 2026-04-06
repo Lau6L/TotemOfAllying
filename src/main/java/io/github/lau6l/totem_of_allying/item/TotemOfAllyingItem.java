@@ -34,6 +34,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
+import org.joml.Vector3ic;
 
 import java.util.UUID;
 
@@ -42,7 +43,8 @@ public class TotemOfAllyingItem extends Item {
         super(settings);
     }
 
-    public static final Style SUCCESS = Style.EMPTY.withColor(Formatting.AQUA),
+    public static final Style
+            SUCCESS = Style.EMPTY.withColor(Formatting.AQUA),
             FAILURE = Style.EMPTY.withColor(Formatting.RED);
 
     @Override
@@ -190,17 +192,18 @@ public class TotemOfAllyingItem extends Item {
 
     private static void loadAndTeleport(MinecraftServer server, AlliedEntityState state, ItemStack stack, ServerPlayerEntity serverUser, AlliedEntityComponent alliedEntityComponent, World world) {
         ServerWorld allyWorld = server.getWorld(state.world());
+        Vector3ic position = state.position();
         if (allyWorld == null) {
             TotemOfAllying.LOGGER.error("Allied entity was in an unknown world! ({}, [{}, {}, {}])",
                     state.world().toString(),
-                    state.position().x(), state.position().y(), state.position().z());
+                    position.x(), position.y(), position.z());
             TpRequest.onAlliedEntityDeath(stack, serverUser);
             return;
         }
         ServerChunkManager chunkManager = allyWorld.getChunkManager();
         ChunkPos pos = new ChunkPos(
-                ChunkSectionPos.getSectionCoord(state.position().x()),
-                ChunkSectionPos.getSectionCoord(state.position().z())
+                ChunkSectionPos.getSectionCoord(position.x()),
+                ChunkSectionPos.getSectionCoord(position.z())
         );
         chunkManager.addChunkLoadingTicket(
                 ChunkTicketType.FORCED,
