@@ -90,6 +90,7 @@ public class TpRequest {
                 0, 0,
                 TeleportTarget.NO_OP
         ));
+        entity.fallDistance = 0;
 
         spawnTotemOfAllyingParticles(entity);
     }
