@@ -73,6 +73,7 @@ public class OwnerCommand {
                 entity.writeData(view);
 
                 view.remove("Owner");
+                view.put("Tame", Codec.BOOL, false);
 
                 entity.readData(NbtReadView.create(
                         ErrorReporter.EMPTY,
@@ -107,7 +108,7 @@ public class OwnerCommand {
                 entity.writeData(view);
 
                 view.put("Owner", Uuids.INT_STREAM_CODEC, livingOwner.getUuid());
-                view.put("Tame", Codec.BOOL, false);
+                view.put("Tame", Codec.BOOL, true);
 
                 entity.readData(NbtReadView.create(
                         ErrorReporter.EMPTY,
@@ -124,7 +125,8 @@ public class OwnerCommand {
         return entities
                 .stream()
                 .allMatch(entity ->
-                        entity instanceof Tameable ||
-                                entity.getType() == EntityType.ALLAY);
+                        entity instanceof Tameable
+                                || entity.getType() == EntityType.ALLAY
+                                || entity.getType() == EntityType.HAPPY_GHAST);
     }
 }

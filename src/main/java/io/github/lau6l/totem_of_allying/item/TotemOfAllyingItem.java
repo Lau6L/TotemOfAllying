@@ -71,15 +71,18 @@ public class TotemOfAllyingItem extends Item {
     }
 
     private boolean doesTotemOfAllyingApply(Entity entity) {
-        return entity.getType() == EntityType.ALLAY || entity instanceof Tameable;
+        return entity.getType() == EntityType.ALLAY
+                || entity.getType() == EntityType.HAPPY_GHAST
+                || entity instanceof Tameable;
     }
 
     private boolean isOwner(PlayerEntity owner, Entity entity) {
         if (entity instanceof Tameable tameable) {
-            return owner.equals(tameable.getOwner());
+            return owner.equals(tameable.getOwner())
+                    || tameable.getOwner() == null;
         } else if (entity instanceof AllayEntity allay) {
             return ((AccessorAllayEntity) allay).totem_of_allying$isLikedBy(owner);
-        } else return false;
+        } else return (entity.getType() == EntityType.HAPPY_GHAST);
     }
 
     private Text manageNoPreviousAlly(ItemStack stack, PlayerEntity user, LivingEntity entity, ServerWorld world) {
