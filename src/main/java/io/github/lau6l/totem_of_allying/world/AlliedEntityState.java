@@ -10,7 +10,7 @@ import org.joml.Vector3ic;
 public record AlliedEntityState(Vector3ic position, RegistryKey<World> world, int references) {
     public static final Codec<AlliedEntityState> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
-                    Codecs.VECTOR_3I.fieldOf("pos").forGetter(AlliedEntityState::position),
+                    Codecs.VECTOR_3I.fieldOf("pos").forGetter((s) -> (org.joml.Vector3i) s.position),
                     World.CODEC.fieldOf("world").forGetter(AlliedEntityState::world),
                     Codec.INT.fieldOf("references").forGetter(AlliedEntityState::references)
             ).apply(instance, AlliedEntityState::new)

@@ -27,7 +27,7 @@ public class OwnerCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
                 CommandManager.literal("owner")
-                        .requires(CommandManager.requirePermissionLevel(CommandManager.GAMEMASTERS_CHECK))
+                        .requires(CommandManager.requirePermissionLevel(2))
                         .then(
                                 CommandManager.argument("tameables", EntityArgumentType.entities())
                                         .then(

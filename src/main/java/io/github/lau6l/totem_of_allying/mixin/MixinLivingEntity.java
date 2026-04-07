@@ -7,7 +7,9 @@ import io.github.lau6l.totem_of_allying.world.AlliedEntityState;
 import io.github.lau6l.totem_of_allying.world.ToAPersistentState;
 import net.minecraft.entity.*;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.joml.Vector3i;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -53,8 +55,9 @@ public abstract class MixinLivingEntity {
         if (!persistenceManager.isBoundToTotemOfAllying(uuid)) return;
 
         if (reason.shouldSave()) {
+            BlockPos selfPos = self.getBlockPos();
             persistenceManager.addAlliedEntity(uuid, new AlliedEntityState(
-                    self.getBlockPos().asVector3i(),
+                    new Vector3i(selfPos.getX(), selfPos.getY(), selfPos.getZ()),
                     world.getRegistryKey(),
                     0
             ));

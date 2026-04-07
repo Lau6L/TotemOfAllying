@@ -30,9 +30,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
+import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
 import java.util.UUID;
@@ -99,8 +101,9 @@ public class TotemOfAllyingItem extends Item {
 
         ToAPersistentState persistenceManager = ToAPersistentState.getServerState(world.getServer());
         UUID uuid = entity.getUuid();
+        BlockPos entityPos = entity.getBlockPos();
         persistenceManager.addAlliedEntity(uuid, new AlliedEntityState(
-                entity.getBlockPos().asVector3i(),
+                new Vector3i(entityPos.getX(), entityPos.getY(), entityPos.getZ()),
                 entity.getEntityWorld().getRegistryKey()
         ));
         stack.set(ToAComponents.ALLIED_ENTITY_COMPONENT, new AlliedEntityComponent(
