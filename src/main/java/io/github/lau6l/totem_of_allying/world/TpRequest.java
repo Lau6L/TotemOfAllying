@@ -66,7 +66,7 @@ public class TpRequest {
     }
 
     public static void onAlliedEntityDeath(ItemStack stack, ServerPlayerEntity serverUser) {
-        serverUser.getEntityWorld().playSound(
+        serverUser.getWorld().playSound(
                 null,
                 serverUser.getX(), serverUser.getY(), serverUser.getZ(),
                 ToASounds.TOTEM_OF_ALLYING_RELEASE,
@@ -85,7 +85,7 @@ public class TpRequest {
 
         entity.teleportTo(new TeleportTarget(
                 (ServerWorld) world,
-                player.getEntityPos(),
+                player.getPos(),
                 Vec3d.ZERO,
                 0, 0,
                 TeleportTarget.NO_OP
@@ -96,7 +96,7 @@ public class TpRequest {
     }
 
     public static void spawnTotemOfAllyingParticles(Entity entity) {
-        if (entity.getEntityWorld() instanceof ServerWorld serverEntityWorld) {
+        if (entity.getWorld() instanceof ServerWorld serverEntityWorld) {
             Box boundingBox = entity.getBoundingBox();
 
             serverEntityWorld.spawnParticles(

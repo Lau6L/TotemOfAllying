@@ -38,7 +38,7 @@ public abstract class MixinLivingEntity {
         ItemStack stack = item.getStack();
         AlliedEntityComponent alliedEntityComponent = stack.get(ToAComponents.ALLIED_ENTITY_COMPONENT);
         if (alliedEntityComponent == null) return;
-        World world = item.getEntityWorld();
+        World world = item.getWorld();
         if (world.isClient()) return;
         ToAPersistentState state = ToAPersistentState.getServerState(world.getServer());
 
@@ -47,7 +47,7 @@ public abstract class MixinLivingEntity {
 
     @Unique
     private static void removeAlly(Entity.RemovalReason reason, Entity self) {
-        World world = self.getEntityWorld();
+        World world = self.getWorld();
         if (world.isClient()) return;
 
         ToAPersistentState persistenceManager = ToAPersistentState.getServerState(world.getServer());

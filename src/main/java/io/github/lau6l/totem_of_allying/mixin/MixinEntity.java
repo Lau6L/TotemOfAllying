@@ -26,7 +26,7 @@ public abstract class MixinEntity {
     private void onCopyFrom(ServerWorld from, ServerWorld to, TeleportTarget teleportTarget, CallbackInfoReturnable<Entity> cir) {
         Entity self = (Entity)(Object) this;
         if (self.getType() == EntityType.ALLAY || self instanceof Tameable) {
-            World world = self.getEntityWorld();
+            World world = self.getWorld();
             if (world.isClient()) return;
 
             ToAPersistentState persistenceManager = ToAPersistentState.getServerState(from.getServer());

@@ -50,7 +50,7 @@ public class TotemOfAllyingItem extends Item {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        World world = user.getEntityWorld();
+        World world = user.getWorld();
         stack = user.getStackInHand(hand);
         if (world.isClient() ||
                 !doesTotemOfAllyingApply(entity)
@@ -104,7 +104,7 @@ public class TotemOfAllyingItem extends Item {
         BlockPos entityPos = entity.getBlockPos();
         persistenceManager.addAlliedEntity(uuid, new AlliedEntityState(
                 new Vector3i(entityPos.getX(), entityPos.getY(), entityPos.getZ()),
-                entity.getEntityWorld().getRegistryKey()
+                entity.getWorld().getRegistryKey()
         ));
         stack.set(ToAComponents.ALLIED_ENTITY_COMPONENT, new AlliedEntityComponent(
                 uuid,
@@ -209,7 +209,7 @@ public class TotemOfAllyingItem extends Item {
                 ChunkSectionPos.getSectionCoord(position.x()),
                 ChunkSectionPos.getSectionCoord(position.z())
         );
-        chunkManager.addChunkLoadingTicket(
+        chunkManager.addTicket(
                 ChunkTicketType.FORCED,
                 pos,
                 1

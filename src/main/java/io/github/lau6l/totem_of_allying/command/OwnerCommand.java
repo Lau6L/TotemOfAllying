@@ -99,7 +99,7 @@ public class OwnerCommand {
             } else if (entity instanceof AbstractHorseEntity horse) {
                 horse.setOwner(livingOwner);
                 horse.setTame(true);
-                horse.getEntityWorld().sendEntityStatus(horse, (byte) 7);
+                horse.getWorld().sendEntityStatus(horse, (byte) 7);
             } else if (entity instanceof AllayEntity allay) {
                 allay.getBrain()
                         .remember(MemoryModuleType.LIKED_PLAYER, livingOwner.getUuid());
