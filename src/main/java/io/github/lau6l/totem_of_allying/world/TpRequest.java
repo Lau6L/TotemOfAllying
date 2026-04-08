@@ -84,6 +84,8 @@ public class TpRequest {
         spawnTotemOfAllyingParticles(entity);
 
         entity.fallDistance = 0;
+        entity.dismountVehicle();
+        if (entity.hasPassengers()) entity.removeAllPassengers();
         Entity newEntity = entity.teleportTo(new TeleportTarget(
                 (ServerWorld) world,
                 player.getPos(),
