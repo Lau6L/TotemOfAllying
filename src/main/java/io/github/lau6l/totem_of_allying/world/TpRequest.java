@@ -83,16 +83,16 @@ public class TpRequest {
     public static void teleportAlliedEntityToPlayer(Entity entity, World world, PlayerEntity player) {
         spawnTotemOfAllyingParticles(entity);
 
-        entity.teleportTo(new TeleportTarget(
+        entity.fallDistance = 0;
+        Entity newEntity = entity.teleportTo(new TeleportTarget(
                 (ServerWorld) world,
                 player.getEntityPos(),
                 Vec3d.ZERO,
                 0, 0,
                 TeleportTarget.NO_OP
         ));
-        entity.fallDistance = 0;
 
-        spawnTotemOfAllyingParticles(entity);
+        if (newEntity != null) spawnTotemOfAllyingParticles(newEntity);
     }
 
     public static void spawnTotemOfAllyingParticles(Entity entity) {
