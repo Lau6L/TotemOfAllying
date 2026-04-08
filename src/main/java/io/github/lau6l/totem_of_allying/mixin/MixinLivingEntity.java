@@ -8,8 +8,8 @@ import io.github.lau6l.totem_of_allying.world.ToAPersistentState;
 import net.minecraft.entity.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
-import org.joml.Vector3i;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +21,7 @@ import java.util.UUID;
 @Mixin(LivingEntity.class)
 public abstract class MixinLivingEntity {
     @Inject(
-            method = "onRemove",
+            method = "remove",
             at = @At("HEAD")
     )
     private void onOnRemove(Entity.RemovalReason reason, CallbackInfo ci) {
@@ -57,7 +57,7 @@ public abstract class MixinLivingEntity {
         if (reason.shouldSave()) {
             BlockPos selfPos = self.getBlockPos();
             persistenceManager.addAlliedEntity(uuid, new AlliedEntityState(
-                    new Vector3i(selfPos.getX(), selfPos.getY(), selfPos.getZ()),
+                    new Vec3i(selfPos.getX(), selfPos.getY(), selfPos.getZ()),
                     world.getRegistryKey(),
                     0
             ));

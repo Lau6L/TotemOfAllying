@@ -33,9 +33,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
-import org.joml.Vector3i;
-import org.joml.Vector3ic;
 
 import java.util.UUID;
 
@@ -74,7 +73,6 @@ public class TotemOfAllyingItem extends Item {
 
     private boolean doesTotemOfAllyingApply(Entity entity) {
         return entity.getType() == EntityType.ALLAY
-                || entity.getType() == EntityType.HAPPY_GHAST
                 || entity instanceof Tameable;
     }
 
@@ -84,7 +82,7 @@ public class TotemOfAllyingItem extends Item {
                     || tameable.getOwner() == null;
         } else if (entity instanceof AllayEntity allay) {
             return ((AccessorAllayEntity) allay).totem_of_allying$isLikedBy(owner);
-        } else return (entity.getType() == EntityType.HAPPY_GHAST);
+        } else return false;
     }
 
     private Text manageNoPreviousAlly(ItemStack stack, PlayerEntity user, LivingEntity entity, ServerWorld world) {
@@ -103,7 +101,7 @@ public class TotemOfAllyingItem extends Item {
         UUID uuid = entity.getUuid();
         BlockPos entityPos = entity.getBlockPos();
         persistenceManager.addAlliedEntity(uuid, new AlliedEntityState(
-                new Vector3i(entityPos.getX(), entityPos.getY(), entityPos.getZ()),
+                new Vec3i(entityPos.getX(), entityPos.getY(), entityPos.getZ()),
                 entity.getWorld().getRegistryKey()
         ));
         stack.set(ToAComponents.ALLIED_ENTITY_COMPONENT, new AlliedEntityComponent(
@@ -196,18 +194,18 @@ public class TotemOfAllyingItem extends Item {
 
     private static void loadAndTeleport(MinecraftServer server, AlliedEntityState state, ItemStack stack, ServerPlayerEntity serverUser, AlliedEntityComponent alliedEntityComponent, World world) {
         ServerWorld allyWorld = server.getWorld(state.world());
-        Vector3ic position = state.position();
+        Vec3i position = state.position();
         if (allyWorld == null) {
             TotemOfAllying.LOGGER.error("Allied entity was in an unknown world! ({}, [{}, {}, {}])",
                     state.world().toString(),
-                    position.x(), position.y(), position.z());
+                    position.getX(), position.getY(), position.getZ());
             TpRequest.onAlliedEntityDeath(stack, serverUser);
             return;
         }
         ServerChunkManager chunkManager = allyWorld.getChunkManager();
         ChunkPos pos = new ChunkPos(
-                ChunkSectionPos.getSectionCoord(position.x()),
-                ChunkSectionPos.getSectionCoord(position.z())
+                ChunkSectionPos.getSectionCoord(position.getX()),
+                ChunkSectionPos.getSectionCoord(position.getZ())
         );
         chunkManager.addTicket(
                 ChunkTicketType.FORCED,

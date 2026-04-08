@@ -10,12 +10,10 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.storage.NbtReadView;
-import net.minecraft.storage.NbtWriteView;
 import net.minecraft.text.Text;
-import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Uuids;
 
 import java.util.Collection;
@@ -27,7 +25,7 @@ public class OwnerCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
                 CommandManager.literal("owner")
-                        .requires(CommandManager.requirePermissionLevel(2))
+                        .requires((source) -> source.hasPermissionLevel(2))
                         .then(
                                 CommandManager.argument("tameables", EntityArgumentType.entities())
                                         .then(
@@ -69,17 +67,13 @@ public class OwnerCommand {
                 allay.getBrain()
                         .forget(MemoryModuleType.LIKED_PLAYER);
             } else {
-                NbtWriteView view = NbtWriteView.create(ErrorReporter.EMPTY);
-                entity.writeData(view);
+                NbtCompound nbt = new NbtCompound();
+                entity.writeNbt(nbt);
 
-                view.remove("Owner");
-                view.put("Tame", Codec.BOOL, false);
+                nbt.remove("Owner");
+                nbt.put("Tame", Codec.BOOL, false);
 
-                entity.readData(NbtReadView.create(
-                        ErrorReporter.EMPTY,
-                        entity.getRegistryManager(),
-                        view.getNbt()
-                ));
+                entity.readNbt(nbt);
             }
         });
 
@@ -104,17 +98,13 @@ public class OwnerCommand {
                 allay.getBrain()
                         .remember(MemoryModuleType.LIKED_PLAYER, livingOwner.getUuid());
             } else {
-                NbtWriteView view = NbtWriteView.create(ErrorReporter.EMPTY);
-                entity.writeData(view);
+                NbtCompound nbt = new NbtCompound();
+                entity.writeNbt(nbt);
 
-                view.put("Owner", Uuids.INT_STREAM_CODEC, livingOwner.getUuid());
-                view.put("Tame", Codec.BOOL, true);
+                nbt.put("Owner", Uuids.INT_STREAM_CODEC, livingOwner.getUuid());
+                nbt.put("Tame", Codec.BOOL, true);
 
-                entity.readData(NbtReadView.create(
-                        ErrorReporter.EMPTY,
-                        entity.getRegistryManager(),
-                        view.getNbt()
-                ));
+                entity.readNbt(nbt);
             }
         });
 
@@ -126,7 +116,6 @@ public class OwnerCommand {
                 .stream()
                 .allMatch(entity ->
                         entity instanceof Tameable
-                                || entity.getType() == EntityType.ALLAY
-                                || entity.getType() == EntityType.HAPPY_GHAST);
+                                || entity.getType() == EntityType.ALLAY);
     }
 }
