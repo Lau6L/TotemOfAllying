@@ -23,7 +23,9 @@ public abstract class MixinEntity {
     )
     private void onCopyFrom(ServerWorld from, ServerWorld to, TeleportTarget teleportTarget, CallbackInfoReturnable<Entity> cir) {
         Entity self = (Entity)(Object) this;
-        if (self.getType() == EntityType.ALLAY || self instanceof Tameable) {
+        if (self instanceof Tameable
+                || self.getType() == EntityType.ALLAY
+                || self.getType() == EntityType.HAPPY_GHAST) {
             World world = self.getEntityWorld();
             if (world.isClient()) return;
 

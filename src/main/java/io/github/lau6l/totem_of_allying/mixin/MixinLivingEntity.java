@@ -24,7 +24,9 @@ public abstract class MixinLivingEntity {
     )
     private void onOnRemove(Entity.RemovalReason reason, CallbackInfo ci) {
         Entity self = ((Entity)(Object) this);
-        if (self.getType() == EntityType.ALLAY || self instanceof Tameable) {
+        if (self instanceof Tameable
+                || self.getType() == EntityType.ALLAY
+                || self.getType() == EntityType.HAPPY_GHAST) {
             removeAlly(reason, self);
         } else if (self instanceof ItemEntity item && item.getStack().isOf(ToAItems.TOTEM_OF_ALLYING)) {
             removeItem(item);
